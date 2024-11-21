@@ -1,0 +1,175 @@
+import time
+import string
+
+rules = [
+    {
+        "conditions": ["opening", "hours"],
+        "response": "Our store is open from 10 AM to 10 PM, Monday through Saturday."
+    },
+    {
+        "conditions": ["return", "policy"],
+        "response": "You can return your purchased items within 30 days with the receipt."
+    },
+    {
+        "conditions": ["free", "shipping"],
+        "response": "Yes we offer free shipping on all orders over £10"
+    },
+    {
+        "conditions": ["track", "order"],
+        "response": "The tracking number sent to your email can be used to track your orders"
+    },
+    {
+        "conditions": ["contact", "support"],
+        "response": "You can reach our support team at customersupport@example.com or call us at 578436157."
+    },
+    {
+        "conditions": ["payment", "methods"],
+        "response": "We accept Visa, MasterCard, PayPal, and Apple Pay."
+    },
+    {
+        "conditions": ["gift", "cards"],
+        "response": "Yes you can purchase gift cards of multiple amounts"
+    },
+    {
+        "conditions": ["cancel", "order"],
+        "response": "You can cancel your order within 24 hours of placing it."
+    },
+    {
+        "conditions": ["physical", "stores"],
+        "response": "We have physical stores in London, Bath, and Manchester."
+    },
+    {
+        "conditions": ["receipt", "purchase"],
+        "response": "Receipts are automatically sent to your email after purchase"
+    }
+]
+
+def backward_chaining_ai(user_input):
+   
+    user_facts = user_input.lower().translate(str.maketrans('', '', string.punctuation)).split()
+    
+   
+    for rule in rules:
+        if all(condition in user_facts for condition in rule["conditions"]):
+            return rule["response"]
+    
+    return "I'm sorry, I don't understand your question. Can you rephrase?"
+
+def benchmarkTest():
+    
+    test_inputs = [
+        "What is the shops opening hours?",
+        "What is your return policy?",
+        "Do you have free shipping?",
+        "How do I track my order?",
+        "How can I contact support?",
+        "What payment methods do you accept?",
+        "Do you offer gift cards?",
+        "Can I cancel my order?",
+        "Do you have physical stores?",
+        "Can I get a receipt for my purchase?"
+    ]
+
+    print("\nBenchmarking Backward Chaining AI:")
+    start = time.time()  
+
+    
+    for _ in range(50000):  
+        for input_text in test_inputs:
+            backward_chaining_ai(input_text)  
+
+    end = time.time()  
+    print(f"Backward Chaining AI took {end - start:.6f} seconds to process 50000 questions.")
+
+def test_backward_chaining():
+    test_cases = [
+        {
+            "input": "What are your opening hours?",
+            "expected": "Our store is open from 10 AM to 10 PM, Monday through Saturday."
+        },
+        {
+            "input": "What is your return policy?",
+            "expected": "You can return your purchased items within 30 days with the receipt."
+        },
+        {
+            "input": "Do you have free shipping?",
+            "expected": "Yes we offer free shipping on all orders over £10"
+        },
+        {
+            "input": "How do I track my order?",
+            "expected": "The tracking number sent to your email can be used to track your orders"
+        },
+        {
+            "input": "How can I contact support?",
+            "expected": "You can reach our support team at customersupport@example.com or call us at 578436157."
+        },
+        {
+            "input": "What payment methods do you accept?",
+            "expected": "We accept Visa, MasterCard, PayPal, and Apple Pay."
+        },
+        {
+            "input": "Do you offer gift cards?",
+            "expected": "Yes you can purchase gift cards of multiple amounts"
+        },
+        {
+            "input": "Can I cancel my order?",
+            "expected": "You can cancel your order within 24 hours of placing it."
+        },
+        {
+            "input": "Do you have physical stores?",
+            "expected": "We have physical stores in London, Bath, and Manchester."
+        },
+        {
+            "input": "Can I get a receipt for my purchase?",
+            "expected": "Receipts are automatically sent to your email after purchase"
+        },
+        
+    ]
+    passed = 0
+    
+    for case in test_cases:
+        user_input = case["input"]
+        expected_output = case["expected"]
+        actual_output = backward_chaining_ai(user_input)
+
+        if actual_output == expected_output:
+            print(f"Test passed for input: {user_input}")
+            passed += 1
+        else:
+            print(f"Test failed for input: {user_input}")
+            print(f"Expected: {expected_output}")
+            print(f"Got: {actual_output}")
+    
+    
+    print(f"\n{passed}/{len(test_cases)} tests passed.")
+
+def main():
+    print("Welcome Customer Support (type 'exit' to quit)")
+    while True:
+       
+        user_input = input("Ask a question: ").strip() #.strip removes unwanted extra spacing
+        
+        if user_input.lower() == "exit":#converts all the users characters to lower case
+            print("Goodbye!")
+            break
+        
+        response = backward_chaining_ai(user_input) #calls the backward ai 
+        #function to find a match to the users input
+        
+        print(response)
+
+if __name__ == "__main__":
+    print("Select a mode to run:")
+    print("1. Interactive Mode")
+    print("2. Run Tests")
+    print("3. Run Benchmark")
+
+    choice = input("Enter your choice (1, 2, or 3): ").strip()
+    if choice == "1":
+        main()
+    elif choice == "2":
+        test_backward_chaining()
+    elif choice == "3":
+        benchmarkTest()
+    else:
+        print("Invalid choice. Exiting.")
