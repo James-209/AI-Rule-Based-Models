@@ -1,0 +1,193 @@
+import time
+
+data_set = [
+    {
+        "question": "What is the shops opening hours?",
+        "keywords": ["opening", "hours"],
+        "response": "Our store is open from 10 AM to 10 PM, Monday through Saturday."
+    },
+    {
+        "question": "What is your return policy?",
+        "keywords": ["return", "policy"],
+        "response": "You can return your purchased items within 30 days with the receipt."
+    },
+    {
+        "question": "Do you have free shipping?",
+        "keywords": ["free", "shipping"],
+        "response": "Yes we offer free shipping on all orders over £10."
+    },
+    {
+        "question": "Can I track my order?",
+        "keywords": ["track", "order"],
+        "response": "The tracking number sent to your email can be used to track your orders"
+    },
+    {
+        "question": "How can I contact customer support?",
+        "keywords": ["contact", "support"],
+        "response": "You can reach our support team at customersupport@example.com or call us at 578436157."
+    },
+    {
+        "question": "What payment methods do you accept?",
+        "keywords": ["payment", "methods"],
+        "response": "We accept Visa, MasterCard, PayPal, and Apple Pay."
+    },
+    {
+        "question": "Do you offer gift cards?",
+        "keywords": ["gift", "cards"],
+        "response": "Yes you can purchase gift cards of multiple amounts"
+    },
+    {
+        "question": "Can I cancel my order?",
+        "keywords": ["cancel", "order"],
+        "response": "You can cancel your order within 24 hours of placing it."
+    },
+    {
+        "question": "Do you have physical stores?",
+        "keywords": ["physical", "stores"],
+        "response": "We have physical stores in London, Bath, and Manchester."
+    },
+    {
+        "question": "Can I get a receipt for my purchase?",
+        "keywords": ["receipt", "purchase"],
+        "response": "Receipts are automatically sent to your email after purchase"
+    }
+]
+
+
+def rule_based_ai(user_input):
+    
+    for item in data_set:
+       
+        if all(keyword in user_input.lower() for keyword in item["keywords"]):
+            return item["response"]
+   
+    return "I'm sorry, I don't understand your question. Can you rephrase?"
+
+
+def benchmarkTest():
+    test_inputs = [ #the inputs that the AI uses for the test
+        "What is the shops opening hours?",
+        "Can you tell me your return policy?",
+        "Do you have free shipping?",
+        "How do I track my order?",
+        "How can I contact support?",
+        "What is your refund policy?",
+        "What payment methods do you accept?",
+        "Do you offer gift cards?",
+        "Can I cancel my order?",
+        "Do you have physical stores?",
+        "Can I get a receipt for my purchase?"
+        
+    ] #both AI models have the same amount of inputs
+
+    print("\nBenchmarking Forward Chaining AI:")
+    start = time.time()  #starts the timer for the test
+
+    for _ in range(50000): #outer loop repeats the inner loop desired amount of times
+        #depending on the test that is being carried out
+        for input_text in test_inputs:#inner loop iterates through the pre written test inputs
+            rule_based_ai(input_text) 
+
+    end = time.time()  # stops the timer so that the time it took can be recorded
+    print(f"Forward Chaining AI took {end - start:.6f} seconds to process 50,000 iterations.")
+    #end - start shows the total amount of time passed for the iterations to be completed
+    #.6f i chose this so that it would display 6 decimal figuers in the results
+
+def test_rule_based_ai():
+    
+    test_cases = [ 
+        {
+            "input": "What is the shops opening hours?",
+            "expected": "Our store is open from 10 AM to 10 PM, Monday through Saturday."
+        },
+        {
+            "input": "Can you tell me your return policy?",
+            "expected": "You can return your purchased items within 30 days with the receipt."
+        },
+        {
+            "input": "Do you have free shipping?",
+            "expected": "Yes we offer free shipping on all orders over £10."
+        },
+        {
+            "input": "How do I track my order?",
+            "expected": "The tracking number sent to your email can be used to track your orders"
+        },
+        {
+            "input": "How can I contact support?",
+            "expected": "You can reach our support team at customersupport@example.com or call us at 578436157."
+        },
+        {
+            "input": "What payment methods do you accept?",
+            "expected": "We accept Visa, MasterCard, PayPal, and Apple Pay."
+        },
+        {
+            "input": "Do you offer gift cards?",
+            "expected": "Yes you can purchase gift cards of multiple amounts"
+        },
+        {
+            "input": "Can I cancel my order?",
+            "expected": "You can cancel your order within 24 hours of placing it."
+        },
+        {
+            "input": "Do you have physical stores?",
+            "expected": "We have physical stores in London, Bath, and Manchester."
+        },
+        {
+            "input": "Can I get a receipt for my purchase?",
+            "expected": "Receipts are automatically sent to your email after purchase"
+        },
+        
+    ]
+
+    passed = 0
+
+   
+    for case in test_cases: #loops through all the test cases 
+        user_input = case["input"]
+        expected_output = case["expected"]
+        actual_output = rule_based_ai(user_input)
+
+        
+        if actual_output == expected_output: #checks what the model has outputted against what
+            #should actually be outputted
+            print(f"Test passed for input: {user_input}")
+            passed += 1 #adds to the passed varible
+        else:
+            print(f"Test failed for input: {user_input}")
+            print(f"Expected: {expected_output}")
+            print(f"Got: {actual_output}")
+    
+    
+    print(f"\n{passed}/{len(test_cases)} tests passed.") #compares how many answers were correct with the amount
+    #of tests that were completed
+
+
+def main():
+    print("Welcome to the Customer Support Assistant! (type 'exit' to quit)")
+    while True:
+       
+        user_input = input("Ask a question: ").strip()
+        
+        if user_input.lower() == "exit":
+            print("Thank you for using the assistant. Goodbye!")
+            break
+       
+        response = rule_based_ai(user_input)
+        
+        print(response)
+
+if __name__ == "__main__":
+    print("Select a mode to run:")
+    print("1. Interactive Mode")
+    print("2. Run Tests")
+    print("3. Run Benchmark")
+
+    choice = input("Enter your choice (1, 2, or 3): ").strip()
+    if choice == "1":
+        main()
+    elif choice == "2":
+        test_rule_based_ai()
+    elif choice == "3":
+        benchmarkTest()
+    else:
+        print("Invalid choice. Exiting.")
