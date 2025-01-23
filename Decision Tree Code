@@ -1,0 +1,123 @@
+import numpy as np
+import pandas as pd
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+import time
+
+# This loads the data set from UCI
+url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data'
+column_names = ['mpg', 'cylinders', 'displacement', 'horsepower', 'weight', 'acceleration', 'model_year', 'origin', 'car_name']
+df = pd.read_csv(url, names=column_names, delim_whitespace=True, na_values='?')
+
+
+df.dropna(inplace=True)
+
+
+X = df[['cylinders', 'horsepower', 'weight']] 
+y = df['mpg']
+
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+
+tree_reg = DecisionTreeRegressor(random_state=42)
+tree_reg.fit(X_train, y_train)
+
+
+y_pred = tree_reg.predict(X_test)
+
+def predict_mpg(cylinders, horsepower, weight_lbs):
+    input_data = np.array([[cylinders, horsepower, weight_lbs]])  
+    input_data_scaled = scaler.transform(input_data)  
+    predicted_mpg = tree_reg.predict(input_data_scaled)
+    return f'Predicted MPG for a car with {cylinders} cylinders, {horsepower} horsepower, and {weight_lbs:.2f} lbs weight is {predicted_mpg[0]:.2f}'
+
+
+def speed_test(num_iterations=50):
+
+    sample_inputs = [
+        (4, 150, 2500),
+        (6, 200, 3000),
+        (8, 300, 3500),
+        (4, 120, 2200),
+        (6, 160, 2800),
+        (8, 350, 4000),
+        (4, 100, 2100),
+        (6, 180, 2900),
+        (8, 280, 3300),
+        (4, 140, 2400)
+    ]
+    
+    start_time = time.time()
+    for _ in range(num_iterations):
+        for cylinders, horsepower, weight in sample_inputs:
+            predict_mpg(cylinders, horsepower, weight)
+    end_time = time.time()
+    
+    print(f"\nSpeed Test completed in {end_time - start_time:.4f} seconds for 1000 iterations")
+
+def accuracy_test():
+   
+    known_data = [
+        (4, 150, 2500, 25),  # cylinders, horsepower, weight, the actual mpg of the car
+        (6, 200, 3000, 20),
+        (8, 300, 3500, 15),
+        (4, 120, 2200, 28),
+        (6, 160, 2800, 22),
+        (8, 350, 4000, 14),
+        (4, 100, 2100, 30),
+        (6, 180, 2900, 18),
+        (8, 280, 3300, 16),
+        (4, 140, 2400, 26)
+    ]
+    
+    correct_predictions = 0
+    for cylinders, horsepower, weight, actual_mpg in known_data:
+        predicted_mpg = tree_reg.predict(scaler.transform([[cylinders, horsepower, weight]]))
+        print(f"Predicted MPG: {predicted_mpg[0]:.2f} | Actual MPG: {actual_mpg}")
+        if abs(predicted_mpg[0] - actual_mpg) <= 2:
+            correct_predictions += 1
+    
+    accuracy = (correct_predictions / len(known_data)) * 100
+    print(f"\nAccuracy Test: {accuracy:.2f}% correct predictions")
+
+def main_menu():
+    while True:
+        print("\nTree Decisions")
+        print("\nSelect an option:")
+        print("1. Manual Inputs")
+        print("2. Speed Test")
+        print("3. Accuracy Test")
+        print("4. Exit")
+        
+        choice = input("Enter your choice (1-4): ")
+        
+        if choice == '1':
+            try:
+                user_cylinders = int(input("Enter the number of cylinders: "))
+                user_horsepower = float(input("Enter the horsepower: "))
+                user_weight_lbs = float(input("Enter the weight (in lbs): "))  
+                print(predict_mpg(user_cylinders, user_horsepower, user_weight_lbs))
+            except ValueError:
+                print("Invalid input. Please enter numeric values for cylinders, horsepower, and weight (in lbs).")
+        
+        elif choice == '2':
+            speed_test()
+        
+        elif choice == '3':
+            accuracy_test()
+        
+        elif choice == '4':
+            print("Exiting.")
+            break
+        
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main_menu()
